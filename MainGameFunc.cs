@@ -80,14 +80,12 @@ public class MainGameFunc : MonoBehaviour
         SavePanel.SetActive(true);
     }
     // 确认存档
-    public void OnConfirmSave(string FileName)
+    public void OnConfirmExit()
     {
-        saveDataScripts.SaveBySerialization(FileName);
-        SaveComplete.SetActive(true);
-        Invoke("ReturnToChapSel", 3f);
+        ReturnToChapSel();
     }
     // 取消退出
-    public void OnCancelSave()
+    public void OnCancelExit()
     {
         SaveScreen.SetActive(false);
         SaveScreen.GetComponent<Graphic>().CrossFadeAlpha(0f, 0f, false);

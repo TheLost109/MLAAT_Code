@@ -10,6 +10,7 @@ public class SettingsPanelScript : MonoBehaviour
     public AudioSource ExitSFX;
 
     public CanvasGroup SettingsScreen;
+    public GameObject CloseSettings;
     public int Hided = 1;
 
     // 音频设置 相关
@@ -29,9 +30,10 @@ public class SettingsPanelScript : MonoBehaviour
 
     // 右侧面板 
     public int CurrentSets = 0;
-    public GameObject PCSets;
+    public GameObject DataSLPanel;
     public GameObject AudioSets;
     public GameObject LanguageSets;
+    public GameObject PCSets;
 
     // PC设置 相关
     public GameObject FullscreenToggleText;
@@ -46,6 +48,8 @@ public class SettingsPanelScript : MonoBehaviour
 
 
     // 左侧面板 相关
+    public GameObject DataSLBtn;
+    public GameObject DataSLBtnSel;
     public GameObject AudioSetsBtn;
     public GameObject AudioSetsBtnSel;
     public GameObject LangSetsBtn;
@@ -59,10 +63,21 @@ public class SettingsPanelScript : MonoBehaviour
     }
     private void Update()
     {
+        if (SettingsScript.Instance.Halt)
+        {
+            CloseSettings.SetActive(false);
+        }
+        else
+        {
+            CloseSettings.SetActive(true);
+        }
         // 退出设置
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Z) || Input.GetMouseButtonDown(1))
         {
-            Hide();
+            if (!SettingsScript.Instance.Halt)
+            {
+                Hide();
+            }
         }
         // 检测全屏开关状态，并显示对应文字
         if (Screen.fullScreen)
@@ -111,6 +126,13 @@ public class SettingsPanelScript : MonoBehaviour
             RightPanelReset();
             PCConfigBtnSel.SetActive(true);
             PCSets.SetActive(true);
+        }
+        else if (CurrentSets == 99)
+        {
+            ClearLeftBtnsSel();
+            RightPanelReset();
+            DataSLBtnSel.SetActive(true);
+            DataSLPanel.SetActive(true);
         }
         else
         {
@@ -234,6 +256,8 @@ public class SettingsPanelScript : MonoBehaviour
     // 重置左侧面板按钮状态
     public void ClearLeftBtnsSel()
     {
+        DataSLBtn.SetActive(true);
+        DataSLBtnSel.SetActive(false);
         AudioSetsBtn.SetActive(true);
         AudioSetsBtnSel.SetActive(false);
         LangSetsBtn.SetActive(true);
@@ -419,6 +443,7 @@ public class SettingsPanelScript : MonoBehaviour
 
     public void RightPanelReset()
     {
+        DataSLPanel.SetActive(false);
         AudioSets.SetActive(false);
         LanguageSets.SetActive(false);
         PCSets.SetActive(false);
@@ -427,13 +452,21 @@ public class SettingsPanelScript : MonoBehaviour
     // 设置选项卡
     public void SetLeftPanelChange(int num)
     {
-        if (num == 1)
+        if (num == 0)
+        {
+            CurrentSets = 0;
+        }
+        else if (num == 1)
         {
             CurrentSets = 1;
         }
         else if (num == 2)
         {
             CurrentSets = 2;
+        }
+        else if (num == 99)
+        {
+            CurrentSets = 99;
         }
         else
         {

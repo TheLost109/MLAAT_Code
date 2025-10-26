@@ -25,6 +25,11 @@ public class SettingsScript : MonoBehaviour
     // 接下来要读取的存档名称
     public string LoadFileName = "";
 
+    // 是否挂起设置面板
+    public bool Halt = false;
+
+    public int CurrentGame = 0;
+
     // 单例模式
     public static SettingsScript Instance;
     private void Awake()

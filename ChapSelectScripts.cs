@@ -7,12 +7,10 @@ using UnityEngine.UI;
 public class ChapSelectScripts : MonoBehaviour
 {
     public SettingsPanelScript settingsPanelScript;
+    public LoadGameScript loadGameScript;
     public AudioSource ExitSFX;
     public GameObject TSBeginObj;
     public GameObject TSBeginLogo;
-    public GameObject LoadScreen;
-    public GameObject LoadPanel;
-    public GameObject LoadSuccess;
     public GameObject TransitionQ;
     public GameObject TransitionE;
     public GameObject TSPanel;
@@ -36,7 +34,6 @@ public class ChapSelectScripts : MonoBehaviour
     public GameObject BottomNav;
     public GameObject BottomNavGrad;
 
-    private int CurrentGame = -1;
     private int OnTransition = 0;
 
     private int InAlertPage = 0;
@@ -100,20 +97,17 @@ public class ChapSelectScripts : MonoBehaviour
     private void Start()
     {
         EnteringGame = true;
-        LoadScreen.GetComponent<Graphic>().CrossFadeAlpha(0, 0, false);
-        LoadSuccess.GetComponent<Graphic>().CrossFadeAlpha(0, 0, false);
-        CurrentGame = 0;
         Invoke("PlayEnterAnim", 1f);
     }
 
     private void Update()
     {
-        if(settingsPanelScript.Hided == 0 || EnteringGame == true || InOrchestra || InEpisodes)
+        if(settingsPanelScript.Hided == 0 || loadGameScript.Hided == 0 || EnteringGame == true || InOrchestra || InEpisodes)
         {
             BottomNav.SetActive(false);
         }
         // 调整返回操作优先级
-        if (settingsPanelScript.Hided == 1 && InAlertPage == 0 && EnteringGame == false)
+        if (loadGameScript.Hided == 1 && settingsPanelScript.Hided == 1 && InAlertPage == 0 && EnteringGame == false)
         {
             if (!InAnimStudio && !InOrchestra && !InEpisodes)
             {
@@ -124,7 +118,7 @@ public class ChapSelectScripts : MonoBehaviour
                 }
                 if (Input.GetKeyDown(KeyCode.G))
                 {
-                    settingsPanelScript.SendMessage("OpenSettings");
+                    settingsPanelScript.OpenSettings();
                     OpenMenuSFX.Play();
                 }
                 // 切换游戏Q
@@ -190,7 +184,7 @@ public class ChapSelectScripts : MonoBehaviour
             BGMNameArea.SetActive(true);
         }
 
-        if(CurrentGame == 0)
+        if(SettingsScript.Instance.CurrentGame == 0)
         {
             if (SettingsScript.Instance.Language == "Chinese")
             {
@@ -201,7 +195,7 @@ public class ChapSelectScripts : MonoBehaviour
                 BGMName = "♪ Apollo Justice ~ A New Era Begins!";
             }
         }
-        else if(CurrentGame == 1)
+        else if(SettingsScript.Instance.CurrentGame == 1)
         {
             if (SettingsScript.Instance.Language == "Chinese")
             {
@@ -212,7 +206,7 @@ public class ChapSelectScripts : MonoBehaviour
                 BGMName = "♪ Wait A Second! ~ A Spark of Truth";
             }
         }
-        else if (CurrentGame == 2)
+        else if (SettingsScript.Instance.CurrentGame == 2)
         {
             if (SettingsScript.Instance.Language == "Chinese")
             {
@@ -223,7 +217,7 @@ public class ChapSelectScripts : MonoBehaviour
                 BGMName = "♪ Apollo Justice ~ A New Era Begins! 2013";
             }
         }
-        else if (CurrentGame == 3)
+        else if (SettingsScript.Instance.CurrentGame == 3)
         {
             if (SettingsScript.Instance.Language == "Chinese")
             {
@@ -304,25 +298,6 @@ public class ChapSelectScripts : MonoBehaviour
         ExitSFX.Play();
         SceneManager.LoadScene("Menu");
     }
-    public void ShowLoadScreen()
-    {
-        LoadScreen.SetActive(true);
-        LoadScreen.GetComponent<Graphic>().CrossFadeAlpha(.99f, .25f, false);
-        Invoke("ShowLoadPanel", .35f);
-        InAlertPage = 1;
-    }
-
-    private void ShowLoadPanel()
-    {
-        LoadPanel.SetActive(true);
-    }
-    public void OnCancelLoad()
-    {
-        LoadScreen.SetActive(false);
-        LoadScreen.GetComponent<Graphic>().CrossFadeAlpha(0f, 0f, false);
-        LoadPanel.SetActive(false);
-        InAlertPage = 0;
-    }
 
     public void SwitchGameQ()
     {
@@ -332,34 +307,34 @@ public class ChapSelectScripts : MonoBehaviour
             TransitionQ.SetActive(true);
             CursorSFX.Play();
             Invoke("HideEpisodes", .25f);
-            if (CurrentGame == 0)
+            if (SettingsScript.Instance.CurrentGame == 0)
             {
-                CurrentGame = 3;
+                SettingsScript.Instance.CurrentGame = 3;
                 TSMusic.Stop();
                 MuseumMusicMelody.Play();
                 MuseumMusicRhythm.Play();
                 Invoke("CloseTS", .25f);
                 Invoke("OpenMuseum", .75f);
             }
-            else if (CurrentGame == 1)
+            else if (SettingsScript.Instance.CurrentGame == 1)
             {
-                CurrentGame = 0;
+                SettingsScript.Instance.CurrentGame = 0;
                 MLIMusic.Stop();
                 TSMusic.Play();
                 Invoke("CloseMLI", .25f);
                 Invoke("OpenTS", .75f);
             }
-            else if (CurrentGame == 2)
+            else if (SettingsScript.Instance.CurrentGame == 2)
             {
-                CurrentGame = 1;
+                SettingsScript.Instance.CurrentGame = 1;
                 EoJMusic.Stop();
                 MLIMusic.Play();
                 Invoke("CloseEoJ", .25f);
                 Invoke("OpenMLI", .75f);
             }
-            else if (CurrentGame == 3)
+            else if (SettingsScript.Instance.CurrentGame == 3)
             {
-                CurrentGame = 2;
+                SettingsScript.Instance.CurrentGame = 2;
                 MuseumMusicMelody.Stop();
                 MuseumMusicRhythm.Stop();
                 EoJMusic.Play();
@@ -378,34 +353,34 @@ public class ChapSelectScripts : MonoBehaviour
             TransitionE.SetActive(true);
             CursorSFX.Play();
             Invoke("HideEpisodes", .25f);
-            if (CurrentGame == 0)
+            if (SettingsScript.Instance.CurrentGame == 0)
             {
-                CurrentGame = 1;
+                SettingsScript.Instance.CurrentGame = 1;
                 TSMusic.Stop();
                 MLIMusic.Play();
                 Invoke("CloseTS", .25f);
                 Invoke("OpenMLI", .75f);
             }
-            else if (CurrentGame == 1)
+            else if (SettingsScript.Instance.CurrentGame == 1)
             {
-                CurrentGame = 2;
+                SettingsScript.Instance.CurrentGame = 2;
                 MLIMusic.Stop();
                 EoJMusic.Play();
                 Invoke("CloseMLI", .25f);
                 Invoke("OpenEoJ", .75f);
             }
-            else if (CurrentGame == 2)
+            else if (SettingsScript.Instance.CurrentGame == 2)
             {
-                CurrentGame = 3;
+                SettingsScript.Instance.CurrentGame = 3;
                 EoJMusic.Stop();
                 MuseumMusicMelody.Play();
                 MuseumMusicRhythm.Play();
                 Invoke("CloseEoJ", .25f);
                 Invoke("OpenMuseum", .75f);
             }
-            else if (CurrentGame == 3)
+            else if (SettingsScript.Instance.CurrentGame == 3)
             {
-                CurrentGame = 0;
+                SettingsScript.Instance.CurrentGame = 0;
                 MuseumMusicMelody.Stop();
                 MuseumMusicRhythm.Stop();
                 TSMusic.Play();
@@ -467,16 +442,7 @@ public class ChapSelectScripts : MonoBehaviour
         // 改变底部导航
         InAnimStudio = true;
     }
-    //public void ExitAnimStudio()
-    //{
-    //    MuseumPanel.SetActive(true);
-    //    MuseumMusicMelodyClipIntro.FadeIn();
-    //    MuseumMusicMelodyClipLoop.FadeIn();
-    //    ExitSFX.Play();
-    //    SceneManager.UnloadSceneAsync("AnimStudio");
-    //    // 改变底部导航
-    //    InAnimStudio = 0;
-    //}
+
     public void GoToOrchestra()
     {
         MuseumPanel.SetActive(false);
@@ -669,7 +635,7 @@ public class ChapSelectScripts : MonoBehaviour
     }
     public void DisplayEpisodes()
     {
-        if (CurrentGame == 0)
+        if (SettingsScript.Instance.CurrentGame == 0)
         {
             EpisodesTS.SetActive(true);
         }
